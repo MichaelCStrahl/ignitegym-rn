@@ -1,23 +1,29 @@
-import { StatusBar } from 'react-native';
-import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto'
-import { Center, GluestackUIProvider, Text } from '@gluestack-ui/themed'
+import { StatusBar } from 'react-native'
+import {
+  useFonts,
+  // eslint-disable-next-line camelcase
+  Roboto_400Regular,
+  // eslint-disable-next-line camelcase
+  Roboto_700Bold,
+} from '@expo-google-fonts/roboto'
+import { GluestackUIProvider } from '@gluestack-ui/themed'
 
 import { config } from './config/gluestack-ui.config'
-import { Loading } from '@components/loading';
+import { Loading } from '@components/loading'
+import { SignIn } from '@screens/sign-in'
 
 export default function App() {
+  // eslint-disable-next-line camelcase
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold })
 
   return (
     <GluestackUIProvider config={config}>
-      <StatusBar barStyle='light-content' backgroundColor="transparent" translucent />
-      {fontsLoaded ? (
-        <Center flex={1} bg="$gray700">
-          <Text>Home</Text>
-        </Center>
-      ) : (
-        <Loading />
-      )}
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      {fontsLoaded ? <SignIn /> : <Loading />}
     </GluestackUIProvider>
-  );
+  )
 }

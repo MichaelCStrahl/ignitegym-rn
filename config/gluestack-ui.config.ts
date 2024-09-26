@@ -1,7 +1,9 @@
-import { AnimationResolver } from '@gluestack-style/animation-resolver';
-import { MotionAnimationDriver } from '@gluestack-style/legend-motion-animation-driver';
-import { createConfig, createComponents } from '@gluestack-style/react';
-import * as componentsTheme from './theme';
+/* eslint-disable prettier/prettier */
+import * as componentsTheme from './theme'
+
+import { createConfig, createComponents } from '@gluestack-style/react'
+import { AnimationResolver } from '@gluestack-style/animation-resolver'
+import { MotionAnimationDriver } from '@gluestack-style/legend-motion-animation-driver'
 
 export const gluestackUIConfig = createConfig({
   aliases: {
@@ -152,9 +154,9 @@ export const gluestackUIConfig = createConfig({
       green200: '#bbf7d0',
       green300: '#86efac',
       green400: '#4ade80',
-      green500: "#00B37E",
-      green600: "#16a34a",
-      green700: "#00875F",
+      green500: '#00B37E',
+      green600: '#16a34a',
+      green700: '#00875F',
       green800: '#166534',
       green900: '#14532d',
       lime50: '#f7fee7',
@@ -202,18 +204,18 @@ export const gluestackUIConfig = createConfig({
       red200: '#fecaca',
       red300: '#fca5a5',
       red400: '#f87171',
-      red500: "#F75A68",
+      red500: '#F75A68',
       red600: '#dc2626',
       red700: '#b91c1c',
       red800: '#991b1b',
       red900: '#7f1d1d',
-      gray100: "#E1E1E6",
-      gray200: "#C4C4CC",
-      gray300: "#7C7C8A",
-      gray400: "#323238",
-      gray500: "#29292E",
-      gray600: "#202024",
-      gray700: "#121214",
+      gray100: '#E1E1E6',
+      gray200: '#C4C4CC',
+      gray300: '#7C7C8A',
+      gray400: '#323238',
+      gray500: '#29292E',
+      gray600: '#202024',
+      gray700: '#121214',
       warmGray50: '#fafaf9',
       warmGray100: '#f5f5f4',
       warmGray200: '#e7e5e4',
@@ -429,7 +431,7 @@ export const gluestackUIConfig = createConfig({
       black: '#000000',
     },
     space: {
-      'px': '1px',
+      px: '1px',
       '0': 0,
       '0.5': 2,
       '1': 4,
@@ -476,7 +478,7 @@ export const gluestackUIConfig = createConfig({
       '3/6': '50%',
       '4/6': '66.666%',
       '5/6': '83.333%',
-      'full': '100%',
+      full: '100%',
     },
     borderWidths: {
       '0': 0,
@@ -486,15 +488,15 @@ export const gluestackUIConfig = createConfig({
       '8': 8,
     },
     radii: {
-      'none': 0,
-      'xs': 2,
-      'sm': 4,
-      'md': 6,
-      'lg': 8,
-      'xl': 12,
+      none: 0,
+      xs: 2,
+      sm: 4,
+      md: 6,
+      lg: 8,
+      xl: 12,
       '2xl': 16,
       '3xl': 24,
-      'full': 9999,
+      full: 9999,
     },
     breakpoints: {
       base: 0,
@@ -512,20 +514,20 @@ export const gluestackUIConfig = createConfig({
       xl: '@media screen and (min-width: 1280px)',
     },
     letterSpacings: {
-      'xs': -0.4,
-      'sm': -0.2,
-      'md': 0,
-      'lg': 0.2,
-      'xl': 0.4,
+      xs: -0.4,
+      sm: -0.2,
+      md: 0,
+      lg: 0.2,
+      xl: 0.4,
       '2xl': 1.6,
     },
     lineHeights: {
       '2xs': 16,
-      'xs': 18,
-      'sm': 20,
-      'md': 22,
-      'lg': 24,
-      'xl': 28,
+      xs: 18,
+      sm: 20,
+      md: 22,
+      lg: 24,
+      xl: 28,
       '2xl': 32,
       '3xl': 40,
       '4xl': 48,
@@ -552,11 +554,11 @@ export const gluestackUIConfig = createConfig({
     },
     fontSizes: {
       '2xs': 10,
-      'xs': 12,
-      'sm': 14,
-      'md': 16,
-      'lg': 18,
-      'xl': 20,
+      xs: 12,
+      sm: 14,
+      md: 16,
+      lg: 18,
+      xl: 20,
       '2xl': 24,
       '3xl': 30,
       '4xl': 36,
@@ -704,15 +706,15 @@ export const gluestackUIConfig = createConfig({
     },
   },
   plugins: [new AnimationResolver(MotionAnimationDriver)],
-});
+})
 
-type Config = typeof gluestackUIConfig; // Assuming `config` is defined elsewhere
+type Config = typeof gluestackUIConfig // Assuming `config` is defined elsewhere
 
-type Components = typeof componentsConfig;
+export const componentsConfig = createComponents(componentsTheme)
 
-export const componentsConfig = createComponents(componentsTheme);
+type Components = typeof componentsConfig
 
-export type { UIConfig, UIComponents } from '@gluestack-ui/themed';
+export type { UIConfig, UIComponents } from '@gluestack-ui/themed'
 
 export interface IConfig { }
 export interface IComponents { }
@@ -727,4 +729,4 @@ declare module '@gluestack-ui/themed' {
 export const config = {
   ...gluestackUIConfig,
   components: componentsConfig,
-};
+}
