@@ -10,7 +10,7 @@ import { GluestackUIProvider } from '@gluestack-ui/themed'
 
 import { config } from './config/gluestack-ui.config'
 import { Loading } from '@components/loading'
-import { SignUp } from '@screens/sign-up'
+import { Routes } from '@routes/index'
 
 export default function App() {
   // eslint-disable-next-line camelcase
@@ -23,7 +23,7 @@ export default function App() {
         backgroundColor="transparent"
         translucent
       />
-      {fontsLoaded ? <SignUp /> : <Loading />}
+      {fontsLoaded ? <Routes /> : <Loading />}
     </GluestackUIProvider>
   )
 }
