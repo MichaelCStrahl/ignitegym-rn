@@ -3,6 +3,7 @@ import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/
 import { Center, GluestackUIProvider, Text } from '@gluestack-ui/themed'
 
 import { config } from './config/gluestack-ui.config'
+import { Loading } from '@components/loading';
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold })
@@ -10,7 +11,13 @@ export default function App() {
   return (
     <GluestackUIProvider config={config}>
       <StatusBar barStyle='light-content' backgroundColor="transparent" translucent />
-      {fontsLoaded ? <Center bg='$gray700'><Text>Open up App.tsx to start working on your app!</Text></Center> : <Center />}
+      {fontsLoaded ? (
+        <Center flex={1} bg="$gray700">
+          <Text>Home</Text>
+        </Center>
+      ) : (
+        <Loading />
+      )}
     </GluestackUIProvider>
   );
 }
