@@ -1,6 +1,7 @@
+import { ExerciseCard } from '@components/exercise-card'
 import { Group } from '@components/group'
 import { HomeHeader } from '@components/home-header'
-import { VStack } from '@gluestack-ui/themed'
+import { Text, Heading, HStack, VStack } from '@gluestack-ui/themed'
 import { useState } from 'react'
 import { FlatList } from 'react-native'
 
@@ -31,6 +32,18 @@ export function Home() {
           minHeight: 44,
         }}
       />
+
+      <VStack px="$8">
+        <HStack justifyContent="space-between" mb="$5" alignItems="center">
+          <Heading color="$gray200" fontSize="$md" fontFamily="$heading">
+            Exercícios
+          </Heading>
+          <Text color="$gray200" fontSize="$sm" fontFamily="$body">
+            4
+          </Text>
+        </HStack>
+        <ExerciseCard />
+      </VStack>
     </VStack>
   )
 }
