@@ -5,14 +5,17 @@ import { Button } from '@components/button'
 import { Input } from '@components/input'
 import { ScreenHeader } from '@components/screen-header'
 import { UserPhoto } from '@components/user-photo'
-import { Center, Heading, Text, VStack } from '@gluestack-ui/themed'
-import { ScrollView, TouchableOpacity, Alert } from 'react-native'
+import { Center, Heading, Text, VStack, useToast } from '@gluestack-ui/themed'
+import { ScrollView, TouchableOpacity } from 'react-native'
 import { useState } from 'react'
+import { ToastMessage } from '@components/toast-message'
 
 export function Profile() {
   const [userPhoto, setUserPhoto] = useState(
     'https:github.com/MichaelCStrahl.png',
   )
+
+  const toast = useToast()
 
   const handleUserPhotoSelect = async () => {
     try {
@@ -35,9 +38,18 @@ export function Profile() {
         }
 
         if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
-          return Alert.alert(
-            'Essa imagem é muito grande. Escolha uma de até 5MB',
-          )
+          return toast.show({
+            placement: 'top',
+            render: ({ id }) => (
+              <ToastMessage
+                id={id}
+                action="error"
+                title="Erro ao enviar a imagem!"
+                description="Essa imagem é muito grande. Escolha uma de até 5MB"
+                onClose={() => toast.close(id)}
+              />
+            ),
+          })
         }
         setUserPhoto(photoURI)
       }
