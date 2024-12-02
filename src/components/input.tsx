@@ -1,15 +1,14 @@
 import { Input as GlueStackInput, InputField } from '@gluestack-ui/themed'
 import { ComponentProps } from 'react'
 
-// eslint-disable-next-line prettier/prettier
-interface InputProps extends ComponentProps<typeof InputField> { }
+interface InputProps extends ComponentProps<typeof InputField> {
+  isReadOnly?: boolean
+}
 
-export function Input({ ...rest }: InputProps) {
+export function Input({ isReadOnly = false, ...rest }: InputProps) {
   return (
     <GlueStackInput
-      bg="$gray700"
       h="$14"
-      px="$4"
       borderWidth="$1"
       borderColor="transparent"
       borderRadius="$md"
@@ -17,8 +16,12 @@ export function Input({ ...rest }: InputProps) {
         borderWidth: 1,
         borderColor: '$green500',
       }}
+      isReadOnly={isReadOnly}
+      opacity={isReadOnly ? 0.5 : 1}
     >
       <InputField
+        px="$4"
+        bg="$gray700"
         color="$white"
         fontFamily="$body"
         placeholderTextColor="$gray300"
