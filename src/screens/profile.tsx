@@ -5,10 +5,26 @@ import { UserPhoto } from '@components/user-photo'
 import { Center, Heading, Text, VStack } from '@gluestack-ui/themed'
 import { ScrollView, TouchableOpacity } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
+import { useState } from 'react'
 
 export function Profile() {
+  const [userPhoto, setUserPhoto] = useState(
+    'https:github.com/MichaelCStrahl.png',
+  )
+
   const handleUserPhotoSelect = async () => {
-    await ImagePicker.launchImageLibraryAsync()
+    const photoSelected = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: 'images',
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    })
+
+    if (photoSelected.canceled) {
+      return
+    }
+
+    setUserPhoto(photoSelected.assets[0].uri)
   }
 
   return (
@@ -22,7 +38,7 @@ export function Profile() {
       >
         <Center mt="$6" px="$10">
           <UserPhoto
-            source={{ uri: 'https:github.com/MichaelCStrahl.png' }}
+            source={{ uri: userPhoto }}
             alt="Foto do usuário"
             size="xl"
           />
