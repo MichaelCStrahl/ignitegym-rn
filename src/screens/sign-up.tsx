@@ -15,8 +15,19 @@ import { useNavigation } from '@react-navigation/native'
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
 import { useForm, Controller } from 'react-hook-form'
 
+type SignUpFormData = {
+  name: string
+  email: string
+  password: string
+  password_confirm: string
+}
+
 export function SignUp() {
-  const { control } = useForm()
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpFormData>()
 
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
@@ -24,8 +35,8 @@ export function SignUp() {
     navigation.navigate('signId')
   }
 
-  const handleSignUp = () => {
-    // Implement your sign-up logic here
+  const handleSignUp = (data: SignUpFormData) => {
+    console.log(data)
   }
 
   return (
@@ -61,6 +72,7 @@ export function SignUp() {
                   value={value}
                   placeholder="Nome"
                   onChangeText={onChange}
+                  errorMessage={errors.name?.message}
                 />
               )}
             />
@@ -75,6 +87,7 @@ export function SignUp() {
                   autoCapitalize="none"
                   onChangeText={onChange}
                   keyboardType="email-address"
+                  errorMessage={errors.email?.message}
                 />
               )}
             />
@@ -88,6 +101,7 @@ export function SignUp() {
                   placeholder="Senha"
                   secureTextEntry
                   onChangeText={onChange}
+                  errorMessage={errors.password?.message}
                 />
               )}
             />
@@ -101,11 +115,17 @@ export function SignUp() {
                   placeholder="Confirme a senha"
                   secureTextEntry
                   onChangeText={onChange}
+                  returnKeyType="send"
+                  errorMessage={errors.password_confirm?.message}
+                  onSubmitEditing={handleSubmit(handleSignUp)}
                 />
               )}
             />
 
-            <Button title="Criar e acessar" onPress={handleSignUp} />
+            <Button
+              title="Criar e acessar"
+              onPress={handleSubmit(handleSignUp)}
+            />
           </Center>
 
           <Button
