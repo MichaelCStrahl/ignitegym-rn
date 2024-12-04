@@ -1,3 +1,6 @@
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+
 import {
   VStack,
   Image,
@@ -5,6 +8,7 @@ import {
   Text,
   Heading,
   ScrollView,
+  useToast,
 } from '@gluestack-ui/themed'
 
 import backgroundImg from '@assets/background.png'
@@ -13,13 +17,61 @@ import { Input } from '@components/input'
 import { Button } from '@components/button'
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
 import { useNavigation } from '@react-navigation/native'
+import { Controller, useForm } from 'react-hook-form'
+import { useAuth } from '@contexts/auth-context'
+import { ToastMessage } from '@components/toast-message'
+import { AppError } from '@utils/app-error'
+
+type SignInFormData = {
+  email: string
+  password: string
+}
+
+const signInFormSchema = yup.object({
+  email: yup.string().required('Informe o e-mail.').email('E-mail inválido.'),
+  password: yup.string().required('Informe a senha.'),
+})
 
 export function SignIn() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormData>({
+    resolver: yupResolver(signInFormSchema),
+  })
+  const { signIn, user } = useAuth()
+  const toast = useToast()
 
   const handleGoSignUp = () => {
     navigation.navigate('signUp')
   }
+
+  const handleSignIn = async ({ email, password }: SignInFormData) => {
+    try {
+      await signIn(email, password)
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível entrar. Tente novamente mais tarde.'
+
+      toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
+    }
+  }
+
+  console.log('usuário logado', user)
 
   return (
     <ScrollView
@@ -45,14 +97,36 @@ export function SignIn() {
 
           <Center gap="$2">
             <Heading color="$gray100">Acesse a conta</Heading>
-            <Input
-              placeholder="E-mail"
-              keyboardType="email-address"
-              autoCapitalize="none"
+            <Controller
+              name="email"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  value={value}
+                  placeholder="E-mail"
+                  autoCapitalize="none"
+                  onChangeText={onChange}
+                  keyboardType="email-address"
+                  errorMessage={errors.email?.message}
+                />
+              )}
             />
-            <Input placeholder="Senha" secureTextEntry />
 
-            <Button title="Acessar" />
+            <Controller
+              name="password"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  value={value}
+                  placeholder="Senha"
+                  secureTextEntry
+                  onChangeText={onChange}
+                  errorMessage={errors.password?.message}
+                />
+              )}
+            />
+
+            <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
           </Center>
 
           <Center flex={1} justifyContent="flex-end" mt="$4">
