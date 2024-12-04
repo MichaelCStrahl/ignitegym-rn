@@ -1,15 +1,18 @@
+import { AppError } from '@utils/app-error'
 import axios from 'axios'
 
 const api = axios.create({
   baseURL: 'http://192.168.0.17:3333',
 })
 
-api.interceptors.request.use(
-  (config) => {
-    return config
-  },
+api.interceptors.response.use(
+  (response) => response,
   (error) => {
-    return Promise.reject(error)
+    if (error.response && error.response.data) {
+      return Promise.reject(new AppError(error.response.data.message))
+    } else {
+      return Promise.reject(error)
+    }
   },
 )
 

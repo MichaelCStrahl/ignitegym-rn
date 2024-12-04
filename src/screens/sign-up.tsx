@@ -9,6 +9,7 @@ import {
   Text,
   Heading,
   ScrollView,
+  useToast,
 } from '@gluestack-ui/themed'
 
 import backgroundImg from '@assets/background.png'
@@ -19,7 +20,8 @@ import { useNavigation } from '@react-navigation/native'
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
 import { useForm, Controller } from 'react-hook-form'
 import { api } from '@services/api'
-import axios from 'axios'
+import { AppError } from '@utils/app-error'
+import { ToastMessage } from '@components/toast-message'
 
 type SignUpFormData = {
   name: string
@@ -50,6 +52,8 @@ export function SignUp() {
     resolver: yupResolver(signUpFormSchema),
   })
 
+  const toast = useToast()
+
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
   const handleGoSignIn = () => {
@@ -66,10 +70,22 @@ export function SignUp() {
 
       console.log(response.data)
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log(error.response?.data)
-      }
-      console.log(error)
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : 'Não foi possível criar a conta. Tente novamente mais tarde.'
+
+      toast.show({
+        placement: 'top',
+        render: ({ id }) => (
+          <ToastMessage
+            id={id}
+            action="error"
+            title={title}
+            onClose={() => toast.close(id)}
+          />
+        ),
+      })
     }
   }
 
