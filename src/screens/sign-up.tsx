@@ -18,6 +18,8 @@ import { Button } from '@components/button'
 import { useNavigation } from '@react-navigation/native'
 import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
 import { useForm, Controller } from 'react-hook-form'
+import { api } from '@services/api'
+import axios from 'axios'
 
 type SignUpFormData = {
   name: string
@@ -54,8 +56,21 @@ export function SignUp() {
     navigation.navigate('signId')
   }
 
-  const handleSignUp = (data: SignUpFormData) => {
-    console.log(data)
+  const handleSignUp = async ({ name, email, password }: SignUpFormData) => {
+    try {
+      const response = await api.post('/users', {
+        name,
+        email,
+        password,
+      })
+
+      console.log(response.data)
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.log(error.response?.data)
+      }
+      console.log(error)
+    }
   }
 
   return (
