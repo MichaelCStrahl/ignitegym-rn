@@ -1,5 +1,6 @@
 import { UserDTO } from '@dtos/user-dto'
 import { api } from '@services/api'
+import { storageAuthTokenSave } from '@storage/storage-auth-token'
 import {
   storageUserGet,
   storageUserRemove,
@@ -32,6 +33,25 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] = useState(true)
   const [user, setUser] = useState<UserDTO>({} as UserDTO)
 
+  const storageUserAndToken = async (userData: UserDTO, token: string) => {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      setIsLoadingUserStorageData(true)
+
+      api.defaults.headers.common.Authorization = 'Bearer ' + token
+
+      await storageUserSave(userData)
+      await storageAuthTokenSave(token)
+
+      setUser(userData)
+      // eslint-disable-next-line no-useless-catch
+    } catch (error) {
+      throw error
+    } finally {
+      setIsLoadingUserStorageData(false)
+    }
+  }
+
   const signIn = async (email: string, password: string) => {
     // eslint-disable-next-line no-useless-catch
     try {
@@ -40,9 +60,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         password,
       })
 
-      if (data.user) {
-        setUser(data.user)
-        storageUserSave(data.user)
+      if (data.user && data.token) {
+        storageUserAndToken(data.user, data.token)
       }
     } catch (error) {
       throw error
