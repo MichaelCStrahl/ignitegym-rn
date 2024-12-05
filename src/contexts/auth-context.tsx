@@ -2,6 +2,7 @@ import { UserDTO } from '@dtos/user-dto'
 import { api } from '@services/api'
 import {
   storageAuthTokenGet,
+  storageAuthTokenRemove,
   storageAuthTokenSave,
 } from '@storage/storage-auth-token'
 import {
@@ -103,6 +104,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       setUser({} as UserDTO)
 
       await storageUserRemove()
+      await storageAuthTokenRemove()
       // eslint-disable-next-line no-useless-catch
     } catch (error) {
       throw error
