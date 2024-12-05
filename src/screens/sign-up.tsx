@@ -22,6 +22,8 @@ import { useForm, Controller } from 'react-hook-form'
 import { api } from '@services/api'
 import { AppError } from '@utils/app-error'
 import { ToastMessage } from '@components/toast-message'
+import { useState } from 'react'
+import { useAuth } from '@contexts/auth-context'
 
 type SignUpFormData = {
   name: string
@@ -44,6 +46,9 @@ const signUpFormSchema = yup.object({
 })
 
 export function SignUp() {
+  const [isLoading, setIsLoading] = useState(false)
+  const { signIn } = useAuth()
+
   const {
     control,
     handleSubmit,
@@ -62,14 +67,18 @@ export function SignUp() {
 
   const handleSignUp = async ({ name, email, password }: SignUpFormData) => {
     try {
-      const response = await api.post('/users', {
+      setIsLoading(true)
+
+      await api.post('/users', {
         name,
         email,
         password,
       })
 
-      console.log(response.data)
+      await signIn(email, password)
     } catch (error) {
+      setIsLoading(false)
+
       const isAppError = error instanceof AppError
       const title = isAppError
         ? error.message
@@ -175,6 +184,7 @@ export function SignUp() {
             <Button
               title="Criar e acessar"
               onPress={handleSubmit(handleSignUp)}
+              isLoading={isLoading}
             />
           </Center>
 
