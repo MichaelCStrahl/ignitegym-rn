@@ -1,6 +1,9 @@
 import { UserDTO } from '@dtos/user-dto'
 import { api } from '@services/api'
-import { storageAuthTokenSave } from '@storage/storage-auth-token'
+import {
+  storageAuthTokenGet,
+  storageAuthTokenSave,
+} from '@storage/storage-auth-token'
 import {
   storageUserGet,
   storageUserRemove,
@@ -33,17 +36,19 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] = useState(true)
   const [user, setUser] = useState<UserDTO>({} as UserDTO)
 
-  const storageUserAndToken = async (userData: UserDTO, token: string) => {
+  const updateUserAndToken = (userData: UserDTO, token: string) => {
+    api.defaults.headers.common.Authorization = 'Bearer ' + token
+
+    setUser(userData)
+  }
+
+  const storageUserAndTokenSave = async (userData: UserDTO, token: string) => {
     // eslint-disable-next-line no-useless-catch
     try {
       setIsLoadingUserStorageData(true)
 
-      api.defaults.headers.common.Authorization = 'Bearer ' + token
-
       await storageUserSave(userData)
       await storageAuthTokenSave(token)
-
-      setUser(userData)
       // eslint-disable-next-line no-useless-catch
     } catch (error) {
       throw error
@@ -61,20 +66,27 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       })
 
       if (data.user && data.token) {
-        storageUserAndToken(data.user, data.token)
+        await storageUserAndTokenSave(data.user, data.token)
+        storageUserAndTokenSave(data.user, data.token)
       }
+      // eslint-disable-next-line no-useless-catch
     } catch (error) {
       throw error
+    } finally {
+      setIsLoadingUserStorageData(false)
     }
   }
 
   const loadUserData = async () => {
     // eslint-disable-next-line no-useless-catch
     try {
-      const userLogged = await storageUserGet()
+      setIsLoadingUserStorageData(true)
 
-      if (userLogged) {
-        setUser(userLogged)
+      const userLogged = await storageUserGet()
+      const token = await storageAuthTokenGet()
+
+      if (token && userLogged) {
+        updateUserAndToken(userLogged, token)
       }
       // eslint-disable-next-line no-useless-catch
     } catch (error) {
