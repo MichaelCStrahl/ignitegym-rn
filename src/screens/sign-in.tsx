@@ -21,6 +21,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { useAuth } from '@contexts/auth-context'
 import { ToastMessage } from '@components/toast-message'
 import { AppError } from '@utils/app-error'
+import { useState } from 'react'
 
 type SignInFormData = {
   email: string
@@ -33,6 +34,7 @@ const signInFormSchema = yup.object({
 })
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false)
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
   const {
     control,
@@ -50,12 +52,15 @@ export function SignIn() {
 
   const handleSignIn = async ({ email, password }: SignInFormData) => {
     try {
+      setIsLoading(true)
       await signIn(email, password)
     } catch (error) {
       const isAppError = error instanceof AppError
       const title = isAppError
         ? error.message
         : 'Não foi possível entrar. Tente novamente mais tarde.'
+
+      setIsLoading(false)
 
       toast.show({
         placement: 'top',
@@ -126,7 +131,11 @@ export function SignIn() {
               )}
             />
 
-            <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
+            <Button
+              title="Acessar"
+              onPress={handleSubmit(handleSignIn)}
+              isLoading={isLoading}
+            />
           </Center>
 
           <Center flex={1} justifyContent="flex-end" mt="$4">
