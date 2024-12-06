@@ -23,6 +23,7 @@ export type AuthContextDataProps = {
   isLoadingUserStorageData: boolean
   signOut: () => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
+  updateUserProfile: (updatedUser: UserDTO) => Promise<void>
 }
 
 type AuthContextProviderProps = {
@@ -113,6 +114,17 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     }
   }
 
+  const updateUserProfile = async (userUpdated: UserDTO) => {
+    // eslint-disable-next-line no-useless-catch
+    try {
+      setUser(userUpdated)
+
+      await storageUserSave(userUpdated)
+    } catch (error) {
+      throw error
+    }
+  }
+
   useEffect(() => {
     loadUserData()
   }, [])
@@ -123,6 +135,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         user,
         signIn,
         signOut,
+        updateUserProfile,
         isLoadingUserStorageData,
       }}
     >
