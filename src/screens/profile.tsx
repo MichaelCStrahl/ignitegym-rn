@@ -3,12 +3,21 @@ import * as FileSystem from 'expo-file-system'
 import * as yup from 'yup'
 
 import { yupResolver } from '@hookform/resolvers/yup'
+import defaultUserPhoto from '@assets/userPhotoDefault.png'
 
 import { Button } from '@components/button'
 import { Input } from '@components/input'
 import { ScreenHeader } from '@components/screen-header'
 import { UserPhoto } from '@components/user-photo'
-import { Center, Heading, Text, VStack, useToast } from '@gluestack-ui/themed'
+import {
+  Center,
+  Heading,
+  Text,
+  VStack,
+  useToast,
+  Box,
+  Spinner,
+} from '@gluestack-ui/themed'
 import { ScrollView, TouchableOpacity } from 'react-native'
 import { useState } from 'react'
 import { ToastMessage } from '@components/toast-message'
@@ -50,10 +59,8 @@ const profileSchema = yup.object({
 })
 
 export function Profile() {
+  const [photoIsLoading, setPhotoIsLoading] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
-  const [userPhoto, setUserPhoto] = useState(
-    'https:github.com/MichaelCStrahl.png',
-  )
   const { user, updateUserProfile } = useAuth()
 
   const toast = useToast()
@@ -116,6 +123,8 @@ export function Profile() {
 
   const handleUserPhotoSelect = async () => {
     try {
+      setPhotoIsLoading(true)
+
       const photoSelected = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: 'images',
         allowsEditing: true,
@@ -148,10 +157,49 @@ export function Profile() {
             ),
           })
         }
-        setUserPhoto(photoURI)
+
+        const fileExtension = photoURI.split('.').pop()
+
+        const photoFile = {
+          uri: photoURI,
+          type: `${photoSelected.assets[0].type}/${fileExtension}`,
+          name: `${user.name}.${fileExtension}`.toLowerCase(),
+        } as unknown
+
+        const userPhotoUploadForm = new FormData()
+        userPhotoUploadForm.append('avatar', photoFile)
+
+        const avatarUpdatedResponse = await api.patch(
+          '/users/avatar',
+          userPhotoUploadForm,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          },
+        )
+
+        const userUpdated = user
+        userUpdated.avatar = avatarUpdatedResponse.data.avatar
+
+        await updateUserProfile(userUpdated)
+
+        return toast.show({
+          placement: 'top',
+          render: ({ id }) => (
+            <ToastMessage
+              id={id}
+              action="success"
+              title="Foto atualizada!"
+              onClose={() => toast.close(id)}
+            />
+          ),
+        })
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      setPhotoIsLoading(false)
     }
   }
 
@@ -165,11 +213,30 @@ export function Profile() {
         }}
       >
         <Center mt="$6" px="$10">
-          <UserPhoto
-            source={{ uri: userPhoto }}
-            alt="Foto do usuário"
-            size="xl"
-          />
+          {photoIsLoading && (
+            <Box
+              w="$32"
+              h="$32"
+              borderColor="$gray400"
+              backgroundColor="$gray500"
+              alignItems="center"
+              justifyContent="center"
+              rounded="$full"
+            >
+              <Spinner color="$green500" />
+            </Box>
+          )}
+          {!photoIsLoading && (
+            <UserPhoto
+              source={
+                user.avatar
+                  ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+                  : defaultUserPhoto
+              }
+              alt="Foto do usuário"
+              size="xl"
+            />
+          )}
           <TouchableOpacity onPress={handleUserPhotoSelect}>
             <Text
               color="$green500"
