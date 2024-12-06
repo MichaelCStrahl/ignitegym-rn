@@ -68,7 +68,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
       if (data.user && data.token) {
         await storageUserAndTokenSave(data.user, data.token)
-        storageUserAndTokenSave(data.user, data.token)
+        updateUserAndToken(data.user, data.token)
       }
       // eslint-disable-next-line no-useless-catch
     } catch (error) {
