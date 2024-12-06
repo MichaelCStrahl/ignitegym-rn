@@ -44,13 +44,17 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     setUser(userData)
   }
 
-  const storageUserAndTokenSave = async (userData: UserDTO, token: string) => {
+  const storageUserAndTokenSave = async (
+    userData: UserDTO,
+    token: string,
+    refreshToken: string,
+  ) => {
     // eslint-disable-next-line no-useless-catch
     try {
       setIsLoadingUserStorageData(true)
 
       await storageUserSave(userData)
-      await storageAuthTokenSave(token)
+      await storageAuthTokenSave({ token, refreshToken })
       // eslint-disable-next-line no-useless-catch
     } catch (error) {
       throw error
@@ -67,8 +71,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
         password,
       })
 
-      if (data.user && data.token) {
-        await storageUserAndTokenSave(data.user, data.token)
+      if (data.user && data.token && data.refresh_token) {
+        await storageUserAndTokenSave(data.user, data.token, data.refresh_token)
         updateUserAndToken(data.user, data.token)
       }
       // eslint-disable-next-line no-useless-catch
@@ -85,7 +89,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       setIsLoadingUserStorageData(true)
 
       const userLogged = await storageUserGet()
-      const token = await storageAuthTokenGet()
+      const { token } = await storageAuthTokenGet()
 
       if (token && userLogged) {
         updateUserAndToken(userLogged, token)
@@ -127,6 +131,13 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
 
   useEffect(() => {
     loadUserData()
+  }, [])
+
+  useEffect(() => {
+    const subscribe = api.registerInterceptTokenManager(signOut)
+    return () => {
+      subscribe()
+    }
   }, [])
 
   return (
