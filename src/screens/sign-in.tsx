@@ -43,7 +43,7 @@ export function SignIn() {
   } = useForm<SignInFormData>({
     resolver: yupResolver(signInFormSchema),
   })
-  const { signIn, user } = useAuth()
+  const { signIn } = useAuth()
   const toast = useToast()
 
   const handleGoSignUp = () => {
@@ -75,8 +75,6 @@ export function SignIn() {
       })
     }
   }
-
-  console.log('usuário logado', user)
 
   return (
     <ScrollView

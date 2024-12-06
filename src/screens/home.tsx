@@ -14,7 +14,7 @@ import { FlatList } from 'react-native'
 
 export function Home() {
   const [exercises, setExercises] = useState<ExerciseDTO[]>([])
-  const [groupSelected, setGroupSelected] = useState('Costas')
+  const [groupSelected, setGroupSelected] = useState('antebraço')
   const [groups, setGroups] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -22,8 +22,8 @@ export function Home() {
 
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
-  const handleOpenExercisesDetails = () => {
-    navigation.navigate('exercise')
+  const handleOpenExercisesDetails = (exerciseId: string) => {
+    navigation.navigate('exercise', { exerciseId })
   }
 
   const fetchGroups = async () => {
@@ -131,7 +131,10 @@ export function Home() {
             data={exercises}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <ExerciseCard data={item} onPress={handleOpenExercisesDetails} />
+              <ExerciseCard
+                data={item}
+                onPress={() => handleOpenExercisesDetails(item.id)}
+              />
             )}
             contentContainerStyle={{
               paddingBottom: 20,
